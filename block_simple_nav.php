@@ -169,7 +169,7 @@ class block_simple_nav extends block_base {
      * @param integer $parentcategoryid
      */
     public function simple_nav_get_categories($parentcategoryid) {
-        $childcategories = coursecat::get($parentcategoryid)->get_children();
+        $childcategories = core_course_category::get($parentcategoryid)->get_children();
         if (!empty($childcategories)) {
             foreach ($childcategories as $catid => $childcategory) {
                 $this->categories[$catid] = $childcategory;
@@ -236,7 +236,6 @@ class block_simple_nav extends block_base {
      */
     public function get_content() {
         global $CFG, $DB;
-        require_once ($CFG->libdir . '/coursecatlib.php');
         $module_frontpage_items = array();
         $module_items = array();
         if ($this->content !== NULL) {
