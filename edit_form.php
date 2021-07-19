@@ -30,7 +30,7 @@ class block_simple_nav_edit_form extends block_edit_form {
      * @param integer $parentcategoryid
      */
     protected function simple_nav_get_categories($parentcategoryid) {
-        $childcategories = coursecat::get($parentcategoryid)->get_children();
+        $childcategories = core_course_category::get($parentcategoryid)->get_children();
         if (!empty($childcategories)) {
             foreach ($childcategories as $catid => $childcategory) {
                 $this->categories[$catid] = $childcategory;
@@ -48,7 +48,6 @@ class block_simple_nav_edit_form extends block_edit_form {
      */
     protected function specific_definition($mform) {
         global $CFG, $DB;
-        require_once ($CFG->libdir . '/coursecatlib.php');
         $module_names = array();
 
         // get a list of all the categories
