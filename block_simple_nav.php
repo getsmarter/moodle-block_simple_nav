@@ -55,6 +55,7 @@ class block_simple_nav extends block_base {
             $mycourses = get_courses($categoryid = 'all', $sort = 'c.sortorder ASC',
                     $fields = 'c.id, c.category, c.shortname, c.visible');
         }
+
         return $mycourses;
     }
 
@@ -242,6 +243,11 @@ class block_simple_nav extends block_base {
             return $this->content;
         }
 
+        if (empty($this->config)) {
+            $this->content->text = get_string('configurecats', 'block_simple_nav');
+            return $this->content;
+        }
+
         // getting a list of all the modules names is inactive, as it leads to some problems with
         // non standard modules. We do this manually beneath
         if (!$allmodules = $DB->get_records('modules', array(), 'name ASC', 'name')) {
@@ -250,9 +256,8 @@ class block_simple_nav extends block_base {
 
         // get all the categories and courses from the navigation node
         // save them in $this->categories
-        if (empty($this->categories)) {
-            $this->simple_nav_get_categories(0); // coursecat::get(0)->get_children();//
-                                                 // get_course_category_tree();
+        if (!empty($this->config)) {
+            $this->get_categories_from_config();
         }
 
         // and make an array with all the names
@@ -442,6 +447,7 @@ class block_simple_nav extends block_base {
                     }
                 }
             }
+
             // the following lines are to get all the mods which are directly beneath the startpage.
             // This is a special case, so we have to treat it differently.
             $modules = get_fast_modinfo(1)->get_cms();
@@ -481,5 +487,57 @@ class block_simple_nav extends block_base {
      */
     public function get_aria_role() {
         return 'navigation';
+    }
+
+    /**
+     * Custom function to get categories based on instance config
+     * @return void
+     */
+    public function get_categories_from_config() {
+        // First, get all category IDs set in the config.
+        $catids = $this->get_category_ids_from_config();
+
+        // Then iterate over IDs and call static method to populate categories prop.
+        foreach ($catids as $catid) {
+            // Explicitly push the parent. Original functionality would get all courses from root cat (0) and then filter down based
+            // on which categories were enabled. We now need to go the opposite way, pushing only what is enabled and then getting
+            // the child categories.
+            $parentcat = core_course_category::get($catid);
+            $this->categories[$catid] = $parentcat;
+            $childcategories = $parentcat->get_children();
+
+            // This is a copy/paste from simple_nav_get_categories. Reason for this is that the function only pushes child cats.
+            // This causes issues as we need to manually push parent above.
+            if (!empty($childcategories)) {
+                foreach ($childcategories as $catid => $childcategory) {
+                    $this->categories[$catid] = $childcategory;
+                    if ($childcategory->get_children_count() > 0) {
+                        self::simple_nav_get_categories($catid);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Custom function to get category IDs based on instance config
+     * @return array
+     */
+    public function get_category_ids_from_config() {
+        $configarr = (array) $this->config;
+        $catids = [];
+
+        // Iterate over config values.
+        foreach ($configarr as $key => $value) {
+            // Perform a regex match against the key using the /(startcategory_)(\d)/ pattern.
+            preg_match('/(?<key>startcategory_)(?<courseid>\d)/', $key, $matches);
+
+            // If we have a match AND the value is truthy, push to the cat IDs.
+            if ($matches && $value) {
+                $catids[] = $matches['courseid'];
+            }
+        }
+
+        return $catids;
     }
 }

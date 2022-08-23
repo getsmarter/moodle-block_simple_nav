@@ -36,3 +36,4 @@ $string['displayoptions'] = 'Bullet point display options';
 $string['displayoptionsdesc'] = 'You can choose how the bullet points in the navigation tree look like: standard with icons, only ►, ► and ▪';
 $string['sn_show_mods'] = 'Show ';
 $string['simple_nav:viewcourse'] = 'View courses';
+$string['configurecats'] = 'Please configure categories';
