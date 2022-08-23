@@ -248,7 +248,6 @@ class block_simple_nav extends block_base {
             return $this->content;
         }
 
-
         // getting a list of all the modules names is inactive, as it leads to some problems with
         // non standard modules. We do this manually beneath
         if (!$allmodules = $DB->get_records('modules', array(), 'name ASC', 'name')) {
