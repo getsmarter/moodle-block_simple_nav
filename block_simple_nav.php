@@ -530,7 +530,7 @@ class block_simple_nav extends block_base {
         // Iterate over config values.
         foreach ($configarr as $key => $value) {
             // Perform a regex match against the key using the /(startcategory_)(\d)/ pattern.
-            preg_match('/(?<key>startcategory_)(?<courseid>\d)/', $key, $matches);
+            preg_match('/(?<key>startcategory_)(?<courseid>\d+)/', $key, $matches);
 
             // If we have a match AND the value is truthy, push to the cat IDs.
             if ($matches && $value) {
