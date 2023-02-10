@@ -29,3 +29,6 @@ $plugin->component = 'block_simple_nav';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = 'Lois 1.1';
 
+function test_code_climate_rules_can_i_trigger_a_bad_climate_reaction() {
+    $a_very_very_very_very_very_very_very_very_very_long_variable = 99;
+}
